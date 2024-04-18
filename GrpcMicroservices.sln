@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{0D0432D3-BDB5-437D-A45C-BD36EEB2B1A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrdersService", "OrdersService\OrdersService.csproj", "{A40DFDB2-2522-4B17-AF55-CA01E8303699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticService", "LogisticService\LogisticService.csproj", "{94D5E797-F096-4A15-A8F8-453766FDB636}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D0432D3-BDB5-437D-A45C-BD36EEB2B1A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D0432D3-BDB5-437D-A45C-BD36EEB2B1A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D0432D3-BDB5-437D-A45C-BD36EEB2B1A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D0432D3-BDB5-437D-A45C-BD36EEB2B1A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A40DFDB2-2522-4B17-AF55-CA01E8303699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A40DFDB2-2522-4B17-AF55-CA01E8303699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A40DFDB2-2522-4B17-AF55-CA01E8303699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A40DFDB2-2522-4B17-AF55-CA01E8303699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94D5E797-F096-4A15-A8F8-453766FDB636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94D5E797-F096-4A15-A8F8-453766FDB636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94D5E797-F096-4A15-A8F8-453766FDB636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94D5E797-F096-4A15-A8F8-453766FDB636}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

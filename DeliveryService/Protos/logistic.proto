@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "Protos/delivery.proto";
+
+option csharp_namespace = "LogisticService";
+
+package logistic;
+
+service Logistic {
+  rpc StreamData (stream Request) returns (stream Response);
+}
+
+message Request {
+  string messageId = 1;
+  RequestType type = 2;
+  oneof payload {
+    google.protobuf.Empty pingMessage = 3;
+    delivery_service.Item item = 4;
+    int64 orderId = 5;
+  }
+}
+
+enum RequestType {
+  START_SHIPPING = 0;
+  CHECK = 1;
+  ABORT_SHIPPING = 2;
+  PING = 3;
+}
+
+message Response {
+  string correlationId = 1;
+  google.protobuf.Int32Value progressPercent = 2;
+  oneof payload {
+    google.protobuf.Empty pingMessage = 3;
+    delivery_service.Item Item = 4;
+    int64 orderId = 5;
+  }
+}
+
+

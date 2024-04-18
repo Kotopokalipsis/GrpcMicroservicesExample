@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "DeliveryServer";
+
+package delivery_service;
+
+service Delivery {
+  rpc StartDelivery (Order) returns (DeliveryResponse);
+}
+
+message Order {
+  int64 id = 1;
+  OrderStatus status = 2;
+  repeated Item items = 3;
+}
+
+enum OrderStatus {
+  CREATED = 0;
+  SHIPPING = 1;
+  DELIVERED = 2;
+}
+
+message Item {
+  int64 id = 1;
+  string name = 2;
+}
+
+enum DeliveryRequestStatus {
+  PROCESSING = 0;
+  ERROR = 1;
+  SUCCESS = 2;
+}
+
+message DeliveryResponse {
+  DeliveryRequestStatus status = 1;
+  google.protobuf.StringValue error = 2;
+  Order order = 3;
+}
