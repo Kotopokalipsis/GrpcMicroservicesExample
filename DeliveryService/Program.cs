@@ -3,7 +3,7 @@ using LogisticService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<LogisticDuplexExchangeHandler>();
+builder.Services.AddSingleton<LogisticApiStreamClient>();
 builder.Services.AddHostedService<GrpcLogisticWorker>();
 
 builder.Services.AddGrpc();

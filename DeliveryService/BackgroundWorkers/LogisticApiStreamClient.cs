@@ -3,25 +3,26 @@ using LogisticService;
 
 namespace DeliveryServer.BackgroundWorkers;
 
-public class LogisticDuplexExchangeHandler : IDisposable
+public class LogisticApiStreamClient : IDisposable
 {
-    private AsyncDuplexStreamingCall<Request, Response> StreamExchange { get; set; } = null;
-
-    private bool _disposedValue = false;
-
     public delegate void ReceiveMessageHandler(Response response);
     public event ReceiveMessageHandler? OnMessageReceived;
 
+    private bool _disposedValue = false;
     private readonly SemaphoreSlim _locker = new(1);
     
-    public void SetStream(AsyncDuplexStreamingCall<Request, Response> streamExchange)
-    {
-        StreamExchange = streamExchange;
-    }
+    private AsyncDuplexStreamingCall<Request, Response> StreamExchange { get; set; } = null;
     
+    private readonly Logistic.LogisticClient _logisticClient;
+
+    public LogisticApiStreamClient(Logistic.LogisticClient logisticClient)
+    {
+        _logisticClient = logisticClient;
+    }
+
     public async Task WriteAsync(Request request, CancellationToken ct = default)
     {
-        if (StreamExchange == null) return;
+        CheckStream(ct);
         
         await _locker.WaitAsync(ct);
         
@@ -37,12 +38,19 @@ public class LogisticDuplexExchangeHandler : IDisposable
 
     public async Task ReadingAsync(CancellationToken ct)
     {
-        if (StreamExchange == null) return;
+        CheckStream(ct);
+        
         while (await StreamExchange.ResponseStream.MoveNext(ct))
         {
             var response = StreamExchange.ResponseStream.Current;
             OnMessageReceived?.Invoke(response);
         }
+    }
+    
+    private void CheckStream(CancellationToken ct)
+    {
+        if (StreamExchange != null) return;
+        StreamExchange = _logisticClient.StreamData(cancellationToken: ct);
     }
 
     private void Dispose(bool disposing)
@@ -64,7 +72,7 @@ public class LogisticDuplexExchangeHandler : IDisposable
         GC.SuppressFinalize(this);
     }
     
-    ~LogisticDuplexExchangeHandler()
+    ~LogisticApiStreamClient()
     {
         Dispose(false);
     }

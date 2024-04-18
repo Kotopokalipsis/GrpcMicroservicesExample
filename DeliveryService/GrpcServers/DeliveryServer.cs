@@ -8,11 +8,11 @@ namespace DeliveryServer.GrpcServers;
 
 public class DeliveryServer : Delivery.DeliveryBase
 {
-    private readonly LogisticDuplexExchangeHandler _logisticDuplexExchangeHandler;
+    private readonly LogisticApiStreamClient _logisticApiStreamClient;
 
-    public DeliveryServer(LogisticDuplexExchangeHandler logisticDuplexExchangeHandler)
+    public DeliveryServer(LogisticApiStreamClient logisticApiStreamClient)
     {
-        _logisticDuplexExchangeHandler = logisticDuplexExchangeHandler;
+        _logisticApiStreamClient = logisticApiStreamClient;
     }
 
     public override Task<DeliveryResponse> StartDelivery(Order order, ServerCallContext context)
@@ -33,7 +33,7 @@ public class DeliveryServer : Delivery.DeliveryBase
             {
                 Console.WriteLine($"Start task for item: Id = {item.Id}, Name = {item.Name}");
                 
-                await _logisticDuplexExchangeHandler.WriteAsync(new Request()
+                await _logisticApiStreamClient.WriteAsync(new Request()
                 {
                     MessageId = $"{Guid.NewGuid()}",
                     Item = item,

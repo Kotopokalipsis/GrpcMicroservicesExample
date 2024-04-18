@@ -5,13 +5,11 @@ namespace DeliveryServer.BackgroundWorkers;
 
 public class GrpcLogisticWorker : BackgroundService
 {
-    private readonly Logistic.LogisticClient _logisticClient;
-    private readonly LogisticDuplexExchangeHandler _exchangeHandler;
+    private readonly LogisticApiStreamClient _logisticApiStreamClient;
 
-    public GrpcLogisticWorker(Logistic.LogisticClient logisticClient, LogisticDuplexExchangeHandler exchangeHandler)
+    public GrpcLogisticWorker(LogisticApiStreamClient logisticApiStreamClient)
     {
-        _logisticClient = logisticClient;
-        _exchangeHandler = exchangeHandler;
+        _logisticApiStreamClient = logisticApiStreamClient;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,9 +18,8 @@ public class GrpcLogisticWorker : BackgroundService
         {
             try
             {
-                _exchangeHandler.SetStream(_logisticClient.StreamData(cancellationToken: stoppingToken));
-                _exchangeHandler.OnMessageReceived += _exchange_OnMessageReceived;
-                await _exchangeHandler.ReadingAsync(stoppingToken);
+                _logisticApiStreamClient.OnMessageReceived += _exchange_OnMessageReceived;
+                await _logisticApiStreamClient.ReadingAsync(stoppingToken);
             }
             catch (RpcException e)
             {
