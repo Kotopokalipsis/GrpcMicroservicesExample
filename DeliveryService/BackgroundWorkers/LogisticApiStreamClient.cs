@@ -11,7 +11,7 @@ public class LogisticApiStreamClient : IDisposable
     private bool _disposedValue = false;
     private readonly SemaphoreSlim _locker = new(1);
     
-    private AsyncDuplexStreamingCall<Request, Response> StreamExchange { get; set; } = null;
+    private AsyncDuplexStreamingCall<Request, Response> DuplexStream { get; set; } = null;
     
     private readonly Logistic.LogisticClient _logisticClient;
 
@@ -28,7 +28,14 @@ public class LogisticApiStreamClient : IDisposable
         
         try
         {
-            await StreamExchange.RequestStream.WriteAsync(request, ct);
+            await DuplexStream.RequestStream.WriteAsync(request, ct);
+        }
+        catch (RpcException e)
+        {
+            if (e.StatusCode == StatusCode.Unavailable)
+            {
+                DuplexStream = null;
+            }
         }
         finally
         {
@@ -39,41 +46,32 @@ public class LogisticApiStreamClient : IDisposable
     public async Task ReadingAsync(CancellationToken ct)
     {
         CheckStream(ct);
-        
-        while (await StreamExchange.ResponseStream.MoveNext(ct))
+
+        try
         {
-            var response = StreamExchange.ResponseStream.Current;
-            OnMessageReceived?.Invoke(response);
+            while (await DuplexStream.ResponseStream.MoveNext(ct))
+            {
+                var response = DuplexStream.ResponseStream.Current;
+                OnMessageReceived?.Invoke(response);
+            }
+        }
+        catch (RpcException e)
+        {
+            if (e.StatusCode == StatusCode.Unavailable)
+            {
+                DuplexStream = null;
+            }
         }
     }
     
     private void CheckStream(CancellationToken ct)
     {
-        if (StreamExchange != null) return;
-        StreamExchange = _logisticClient.StreamData(cancellationToken: ct);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                StreamExchange?.Dispose();
-            }
-
-            _disposedValue = true;
-        }
+        if (DuplexStream != null) return;
+        DuplexStream = _logisticClient.StreamData(cancellationToken: ct);
     }
 
     public void Dispose()
     {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-    
-    ~LogisticApiStreamClient()
-    {
-        Dispose(false);
+        DuplexStream?.Dispose();
     }
 }
